@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm add:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx webpack)",
+      "Bash(npx webpack:*)",
+      "Bash(pnpm run compile:*)"
+    ]
+  }
+}

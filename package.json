@@ -1,0 +1,57 @@
+{
+  "name": "graphite-control-plane",
+  "displayName": "Graphite Control Plane",
+  "publisher": "your-name",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "graphiteControlPlane.openPanel",
+        "title": "Graphite: Open Control Plane"
+      },
+      {
+        "command": "graphiteControlPlane.refresh",
+        "title": "Graphite Control Plane: Refresh"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "graphiteControlPlane",
+          "title": "Graphite",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "graphiteControlPlane": [
+        {
+          "id": "graphiteControlPlane.launcher",
+          "name": "Graphite",
+          "type": "webview"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^25.2.2",
+    "@types/vscode": "^1.109.0",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.3.3",
+    "webpack": "^5.105.0",
+    "webpack-cli": "^6.0.1"
+  }
+}
