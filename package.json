@@ -17,6 +17,14 @@
       {
         "command": "graphiteControlPlane.refresh",
         "title": "Graphite Control Plane: Refresh"
+      },
+      {
+        "command": "graphiteControlPlane.sync",
+        "title": "Graphite: Sync"
+      },
+      {
+        "command": "graphiteControlPlane.submit",
+        "title": "Graphite: Submit Stack"
       }
     ],
     "viewsContainers": {

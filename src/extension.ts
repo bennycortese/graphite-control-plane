@@ -16,6 +16,20 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  // Register sync command
+  context.subscriptions.push(
+    vscode.commands.registerCommand("graphiteControlPlane.sync", () => {
+      StackPanel.current?.executeAction("sync");
+    })
+  );
+
+  // Register submit command
+  context.subscriptions.push(
+    vscode.commands.registerCommand("graphiteControlPlane.submit", () => {
+      StackPanel.current?.executeAction("submit");
+    })
+  );
+
   // Register a webview view provider that auto-opens the editor panel
   // when the user clicks the Graphite icon in the activity bar
   const launcherProvider: vscode.WebviewViewProvider = {

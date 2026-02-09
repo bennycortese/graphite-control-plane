@@ -5,7 +5,19 @@
       "Bash(npx tsc:*)",
       "Bash(npx webpack)",
       "Bash(npx webpack:*)",
-      "Bash(pnpm run compile:*)"
+      "Bash(pnpm run compile:*)",
+      "Bash(dir:*)",
+      "Bash(gt:*)",
+      "WebSearch",
+      "WebFetch(domain:apitracker.io)",
+      "WebFetch(domain:graphite.dev)",
+      "WebFetch(domain:docs.graphite.dev)",
+      "WebFetch(domain:graphite.com)",
+      "WebFetch(domain:status.graphite.dev)",
+      "WebFetch(domain:status.graphite.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(git -C \"C:\\\\Users\\\\antho\\\\benny_stuff\\\\graphite-control-plane\" config --get-regexp \"graphite\")",
+      "Bash(git -C \"C:\\\\Users\\\\antho\\\\benny_stuff\\\\graphite-control-plane\" config --local --list)"
     ]
   }
 }

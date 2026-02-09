@@ -24,6 +24,12 @@ body {
   font-weight: 700;
 }
 
+.actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
 .btn {
   background: var(--vscode-button-background);
   color: var(--vscode-button-foreground);
@@ -31,10 +37,16 @@ body {
   border-radius: 8px;
   padding: 6px 10px;
   cursor: pointer;
+  font-size: 12px;
 }
 
 .btn:hover {
   background: var(--vscode-button-hoverBackground);
+}
+
+.btn-icon {
+  font-size: 16px;
+  padding: 4px 8px;
 }
 
 .meta {
@@ -65,6 +77,17 @@ body {
   border-radius: var(--radius);
   padding: 10px;
   background: var(--vscode-sideBar-background);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.node:not(.current):not(.empty-state):hover {
+  border-color: var(--vscode-focusBorder);
+  background: var(--vscode-list-hoverBackground);
+}
+
+.node.current {
+  border-color: var(--vscode-focusBorder);
+  background: var(--vscode-list-activeSelectionBackground);
 }
 
 .node.dragging {
@@ -74,12 +97,19 @@ body {
 .nodeHeader {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 10px;
 }
 
 .nodeTitle {
   font-weight: 600;
   line-height: 1.2;
+}
+
+.badges {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .badge {
@@ -91,10 +121,65 @@ body {
   white-space: nowrap;
 }
 
+.current-badge {
+  background: var(--vscode-badge-background);
+  color: var(--vscode-badge-foreground);
+  border-color: var(--vscode-badge-background);
+}
+
+.trunk-badge {
+  background: transparent;
+  color: var(--muted);
+}
+
 .sub {
   margin-top: 6px;
   color: var(--muted);
   font-size: 12px;
+}
+
+.empty-state {
+  color: var(--muted);
+  text-align: center;
+  padding: 20px 10px;
+}
+
+/* Error banner */
+.error-banner {
+  padding: 8px var(--pad);
+  background: var(--vscode-inputValidation-errorBackground, rgba(255, 0, 0, 0.15));
+  border-bottom: 1px solid var(--vscode-inputValidation-errorBorder, #f44);
+  color: var(--vscode-errorForeground, #f88);
+  font-size: 12px;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--vscode-foreground);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .footer {

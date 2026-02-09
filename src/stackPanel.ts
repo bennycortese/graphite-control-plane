@@ -1,18 +1,12 @@
 import * as vscode from "vscode";
-
-type StackNode = {
-  id: string;
-  title: string;
-  status: "landable" | "approved" | "needs_changes" | "not_reviewed";
-  blockedBy?: string;
-};
-
-type StackState = {
-  stackName: string;
-  base: string;
-  currentNodeId: string;
-  nodes: StackNode[];
-};
+import {
+  getStackState,
+  gtSync,
+  gtSubmitStack,
+  gtRestack,
+  gtCheckout,
+  StackState,
+} from "./gtCli";
 
 export class StackPanel {
   static readonly viewType = "graphiteControlPlane.panel";
@@ -26,6 +20,7 @@ export class StackPanel {
   private readonly panel: vscode.WebviewPanel;
   private readonly extensionUri: vscode.Uri;
   private readonly disposables: vscode.Disposable[] = [];
+  private busy = false;
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     this.panel = panel;
@@ -44,21 +39,27 @@ export class StackPanel {
             await this.postState();
             return;
 
-          case "reorder": {
-            vscode.window.showInformationMessage(
-              `Reorder requested: ${msg.payload?.fromId} -> ${msg.payload?.toId}`
+          case "checkout":
+            await this.runAction("Checkout", () =>
+              gtCheckout(msg.payload?.branch)
             );
-            await this.postState();
             return;
-          }
 
-          case "openUrl": {
-            const url = msg.payload?.url;
-            if (typeof url === "string") {
-              vscode.env.openExternal(vscode.Uri.parse(url));
-            }
+          case "sync":
+            await this.runAction("Sync", () => gtSync());
             return;
-          }
+
+          case "submit":
+            await this.runAction("Submit", () => gtSubmitStack());
+            return;
+
+          case "submitStack":
+            await this.runAction("Submit Stack", () => gtSubmitStack());
+            return;
+
+          case "restack":
+            await this.runAction("Restack", () => gtRestack());
+            return;
         }
       },
       null,
@@ -92,6 +93,44 @@ export class StackPanel {
     await this.postState();
   }
 
+  async executeAction(type: string) {
+    switch (type) {
+      case "sync":
+        await this.runAction("Sync", () => gtSync());
+        break;
+      case "submit":
+        await this.runAction("Submit Stack", () => gtSubmitStack());
+        break;
+    }
+  }
+
+  private setLoading(loading: boolean) {
+    this.panel.webview.postMessage({ type: "loading", payload: loading });
+  }
+
+  private async runAction(name: string, fn: () => Promise<string>) {
+    if (this.busy) {
+      vscode.window.showWarningMessage(
+        `Graphite is busy, please wait for the current operation to finish.`
+      );
+      return;
+    }
+
+    this.busy = true;
+    this.setLoading(true);
+
+    try {
+      await fn();
+      vscode.window.showInformationMessage(`Graphite: ${name} complete.`);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      vscode.window.showErrorMessage(`Graphite ${name} failed: ${msg}`);
+    } finally {
+      this.busy = false;
+      await this.postState();
+    }
+  }
+
   private async postState() {
     const state = await this.loadState();
     this.panel.webview.postMessage({
@@ -101,22 +140,7 @@ export class StackPanel {
   }
 
   private async loadState(): Promise<StackState> {
-    // TODO: Replace with real Graphite + GitHub data.
-    return {
-      stackName: "feat/search-ui",
-      base: "main",
-      currentNodeId: "2",
-      nodes: [
-        { id: "1", title: "Search backend refactor", status: "approved" },
-        {
-          id: "2",
-          title: "Add ranking weights",
-          status: "needs_changes",
-          blockedBy: "reviewer",
-        },
-        { id: "3", title: "UI polish", status: "not_reviewed" },
-      ],
-    };
+    return getStackState();
   }
 
   private getHtml(webview: vscode.Webview) {
@@ -144,22 +168,31 @@ export class StackPanel {
   </head>
   <body>
     <header class="header">
-      <div class="title">Stack</div>
-      <button id="refreshBtn" class="btn">Refresh</button>
+      <div class="title">Graphite</div>
+      <div class="actions">
+        <button id="syncBtn" class="btn">Sync</button>
+        <button id="submitBtn" class="btn">Submit</button>
+        <button id="restackBtn" class="btn">Restack</button>
+        <button id="refreshBtn" class="btn btn-icon" title="Refresh">&#x21bb;</button>
+      </div>
     </header>
 
+    <div id="errorBanner" class="error-banner" style="display:none;">
+      <span id="errorText"></span>
+    </div>
+
     <section class="meta">
-      <div><span class="label">STACK</span> <span id="stackName">—</span></div>
-      <div><span class="label">BASE</span> <span id="baseName">—</span></div>
+      <div><span class="label">TRUNK</span> <span id="trunkName">\u2014</span></div>
+      <div><span class="label">CURRENT</span> <span id="currentName">\u2014</span></div>
     </section>
 
     <main>
       <ul id="stackList" class="stack"></ul>
     </main>
 
-    <footer class="footer">
-      <div id="editingLine" class="editing">You are editing: —</div>
-    </footer>
+    <div id="loadingOverlay" class="loading-overlay" style="display:none;">
+      <div class="spinner"></div>
+    </div>
 
     <script nonce="${nonce}" src="${scriptUri}"></script>
   </body>
