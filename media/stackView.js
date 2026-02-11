@@ -81,7 +81,18 @@
 
     for (const branch of state.branches) {
       const li = document.createElement("li");
-      li.className = "node" + (branch.isCurrent ? " current" : "");
+      li.className = "node";
+      if (branch.isCurrent) li.classList.add("current");
+      if (branch.isTrunk) li.classList.add("trunk");
+
+      // Rail column (dot + connecting line via CSS)
+      const rail = document.createElement("div");
+      rail.className = "rail";
+      li.appendChild(rail);
+
+      // Content column
+      const content = document.createElement("div");
+      content.className = "node-content";
 
       // Header row: name + badges
       const header = document.createElement("div");
@@ -109,8 +120,31 @@
         badges.appendChild(badge);
       }
 
+      // PR badge
+      if (branch.pr) {
+        const prBadge = document.createElement("span");
+        prBadge.className = "pr-badge " + branch.pr.status;
+        const statusLabel = branch.pr.status.charAt(0).toUpperCase() + branch.pr.status.slice(1);
+        prBadge.textContent = "#" + branch.pr.number + " " + statusLabel;
+        badges.appendChild(prBadge);
+      }
+
+      // Review status badge
+      if (branch.pr && branch.pr.reviewStatus) {
+        const reviewBadge = document.createElement("span");
+        const reviewClass = branch.pr.reviewStatus.replace(/_/g, "-");
+        reviewBadge.className = "review-badge " + reviewClass;
+        const reviewLabels = {
+          approved: "Approved",
+          changes_requested: "Changes Requested",
+          review_required: "Review Required",
+        };
+        reviewBadge.textContent = reviewLabels[branch.pr.reviewStatus] || branch.pr.reviewStatus;
+        badges.appendChild(reviewBadge);
+      }
+
       header.appendChild(badges);
-      li.appendChild(header);
+      content.appendChild(header);
 
       // Sub info: commit + time
       if (branch.commitMessage || branch.timeAgo) {
@@ -129,13 +163,15 @@
         }
 
         sub.textContent = parts.join(" · ");
-        li.appendChild(sub);
+        content.appendChild(sub);
       }
+
+      li.appendChild(content);
 
       // Click to checkout non-current branches
       if (!branch.isCurrent && !branch.isTrunk) {
-        li.style.cursor = "pointer";
-        li.addEventListener("click", () => {
+        content.style.cursor = "pointer";
+        content.addEventListener("click", () => {
           vscode.postMessage({
             type: "checkout",
             payload: { branch: branch.name },

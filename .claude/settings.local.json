@@ -17,7 +17,12 @@
       "WebFetch(domain:status.graphite.com)",
       "WebFetch(domain:github.com)",
       "Bash(git -C \"C:\\\\Users\\\\antho\\\\benny_stuff\\\\graphite-control-plane\" config --get-regexp \"graphite\")",
-      "Bash(git -C \"C:\\\\Users\\\\antho\\\\benny_stuff\\\\graphite-control-plane\" config --local --list)"
+      "Bash(git -C \"C:\\\\Users\\\\antho\\\\benny_stuff\\\\graphite-control-plane\" config --local --list)",
+      "WebFetch(domain:sapling-scm.com)",
+      "WebFetch(domain:gist.github.com)",
+      "WebFetch(domain:www.alanvardy.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(python3:*)"
     ]
   }
 }

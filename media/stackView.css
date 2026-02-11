@@ -64,34 +64,93 @@ body {
   margin-right: 6px;
 }
 
+/* Stack list: vertical tree layout, no gap between nodes */
 .stack {
   list-style: none;
   padding: var(--pad);
   margin: 0;
-  display: grid;
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
+/* Each node is a 2-column grid: rail | content */
 .node {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* Rail: vertical line + dot */
+.rail {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 12px;
+}
+
+/* Dot */
+.rail::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--vscode-sideBar-border);
+  background: var(--vscode-sideBar-background);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+/* Vertical connecting line */
+.rail::after {
+  content: "";
+  position: absolute;
+  top: 22px; /* below the dot center */
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  background: var(--vscode-sideBar-border);
+}
+
+/* Current branch: filled dot */
+.node.current .rail::before {
+  background: var(--vscode-focusBorder);
+  border-color: var(--vscode-focusBorder);
+}
+
+/* Trunk: square marker */
+.node.trunk .rail::before {
+  border-radius: 2px;
+}
+
+/* Last node: no line below */
+.node:last-child .rail::after {
+  display: none;
+}
+
+/* Node content card */
+.node-content {
   border: 1px solid var(--vscode-sideBar-border);
   border-radius: var(--radius);
   padding: 10px;
+  margin: 4px 0;
   background: var(--vscode-sideBar-background);
   transition: border-color 0.15s, background 0.15s;
 }
 
-.node:not(.current):not(.empty-state):hover {
+.node:not(.current):not(.empty-state) .node-content:hover {
   border-color: var(--vscode-focusBorder);
   background: var(--vscode-list-hoverBackground);
 }
 
-.node.current {
+.node.current .node-content {
   border-color: var(--vscode-focusBorder);
   background: var(--vscode-list-activeSelectionBackground);
-}
-
-.node.dragging {
-  opacity: 0.6;
 }
 
 .nodeHeader {
@@ -104,12 +163,17 @@ body {
 .nodeTitle {
   font-weight: 600;
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .badges {
   display: flex;
   gap: 4px;
   flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .badge {
@@ -132,13 +196,74 @@ body {
   color: var(--muted);
 }
 
+/* PR badges */
+.pr-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.pr-badge.open {
+  background: rgba(63, 185, 80, 0.15);
+  color: #3fb950;
+  border: 1px solid rgba(63, 185, 80, 0.4);
+}
+
+.pr-badge.merged {
+  background: rgba(163, 113, 247, 0.15);
+  color: #a371f7;
+  border: 1px solid rgba(163, 113, 247, 0.4);
+}
+
+.pr-badge.draft {
+  background: rgba(139, 149, 158, 0.15);
+  color: #8b949e;
+  border: 1px solid rgba(139, 149, 158, 0.4);
+}
+
+.pr-badge.closed {
+  background: rgba(248, 81, 73, 0.15);
+  color: #f85149;
+  border: 1px solid rgba(248, 81, 73, 0.4);
+}
+
+/* Review status badges */
+.review-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.review-badge.approved {
+  background: rgba(63, 185, 80, 0.15);
+  color: #3fb950;
+  border: 1px solid rgba(63, 185, 80, 0.3);
+}
+
+.review-badge.changes-requested {
+  background: rgba(248, 81, 73, 0.15);
+  color: #f85149;
+  border: 1px solid rgba(248, 81, 73, 0.3);
+}
+
+.review-badge.review-required {
+  background: rgba(210, 153, 34, 0.15);
+  color: #d29922;
+  border: 1px solid rgba(210, 153, 34, 0.3);
+}
+
 .sub {
   margin-top: 6px;
   color: var(--muted);
   font-size: 12px;
 }
 
-.empty-state {
+/* Empty state: span full width */
+.node.empty-state {
+  display: block;
   color: var(--muted);
   text-align: center;
   padding: 20px 10px;
