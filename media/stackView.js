@@ -162,7 +162,7 @@
           parts.push(branch.timeAgo);
         }
 
-        sub.textContent = parts.join(" · ");
+        sub.textContent = parts.join(" \u2022 ");
         content.appendChild(sub);
       }
 

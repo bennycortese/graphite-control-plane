@@ -83,10 +83,10 @@ body {
   text-transform: uppercase;
 }
 
-/* Stack list: vertical tree layout, no gap between nodes */
+/* Stack list: vertical tree layout */
 .stack {
   list-style: none;
-  padding: var(--pad);
+  padding: 8px var(--pad) var(--pad);
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -96,7 +96,7 @@ body {
 /* Each node is a 2-column grid: rail | content */
 .node {
   display: grid;
-  grid-template-columns: 24px 1fr;
+  grid-template-columns: 28px 1fr;
   background: transparent;
   border: none;
   padding: 0;
@@ -108,43 +108,48 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-top: 12px;
+  padding-top: 14px;
 }
 
 /* Dot */
 .rail::before {
   content: "";
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  border: 2px solid var(--vscode-sideBar-border);
+  border: 2px solid var(--rail-color);
   background: var(--vscode-sideBar-background);
   position: relative;
   z-index: 1;
   flex-shrink: 0;
+  transition: all 0.2s ease;
 }
 
 /* Vertical connecting line */
 .rail::after {
   content: "";
   position: absolute;
-  top: 22px; /* below the dot center */
+  top: 24px;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 2px;
-  background: var(--vscode-sideBar-border);
+  width: 1.5px;
+  background: var(--rail-color);
 }
 
-/* Current branch: filled dot */
+/* Current branch: filled dot with glow */
 .node.current .rail::before {
   background: var(--vscode-focusBorder);
   border-color: var(--vscode-focusBorder);
+  box-shadow: 0 0 6px rgba(var(--vscode-focusBorder), 0.3);
+  width: 10px;
+  height: 10px;
 }
 
 /* Trunk: square marker */
 .node.trunk .rail::before {
   border-radius: 2px;
+  opacity: 0.6;
 }
 
 /* Last node: no line below */
@@ -154,34 +159,37 @@ body {
 
 /* Node content card */
 .node-content {
-  border: 1px solid var(--vscode-sideBar-border);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius);
-  padding: 10px;
-  margin: 4px 0;
-  background: var(--vscode-sideBar-background);
-  transition: border-color 0.15s, background 0.15s;
+  padding: 8px 10px;
+  margin: 3px 0;
+  background: var(--card-bg);
+  transition: all 0.18s ease;
 }
 
 .node:not(.current):not(.empty-state) .node-content:hover {
-  border-color: var(--vscode-focusBorder);
-  background: var(--vscode-list-hoverBackground);
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateX(2px);
 }
 
 .node.current .node-content {
   border-color: var(--vscode-focusBorder);
-  background: var(--vscode-list-activeSelectionBackground);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 1px rgba(var(--vscode-focusBorder), 0.1);
 }
 
 .nodeHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .nodeTitle {
   font-weight: 600;
-  line-height: 1.2;
+  font-size: 12.5px;
+  line-height: 1.3;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -193,15 +201,18 @@ body {
   gap: 4px;
   flex-shrink: 0;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .badge {
-  font-size: 11px;
-  padding: 2px 8px;
+  font-size: 10px;
+  padding: 1px 7px;
   border-radius: 999px;
-  border: 1px solid var(--vscode-sideBar-border);
-  opacity: 0.9;
+  border: 1px solid var(--card-border);
   white-space: nowrap;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .current-badge {
@@ -213,71 +224,76 @@ body {
 .trunk-badge {
   background: transparent;
   color: var(--muted);
+  opacity: 0.7;
 }
 
 /* PR badges */
 .pr-badge {
-  font-size: 11px;
-  padding: 2px 8px;
+  font-size: 10px;
+  padding: 1px 7px;
   border-radius: 999px;
   white-space: nowrap;
   font-weight: 600;
 }
 
 .pr-badge.open {
-  background: rgba(63, 185, 80, 0.15);
-  color: #3fb950;
-  border: 1px solid rgba(63, 185, 80, 0.4);
-}
-
-.pr-badge.merged {
-  background: rgba(163, 113, 247, 0.15);
-  color: #a371f7;
-  border: 1px solid rgba(163, 113, 247, 0.4);
-}
-
-.pr-badge.draft {
-  background: rgba(139, 149, 158, 0.15);
-  color: #8b949e;
-  border: 1px solid rgba(139, 149, 158, 0.4);
-}
-
-.pr-badge.closed {
-  background: rgba(248, 81, 73, 0.15);
-  color: #f85149;
-  border: 1px solid rgba(248, 81, 73, 0.4);
-}
-
-/* Review status badges */
-.review-badge {
-  font-size: 10px;
-  padding: 1px 6px;
-  border-radius: 999px;
-  white-space: nowrap;
-}
-
-.review-badge.approved {
-  background: rgba(63, 185, 80, 0.15);
+  background: rgba(63, 185, 80, 0.12);
   color: #3fb950;
   border: 1px solid rgba(63, 185, 80, 0.3);
 }
 
-.review-badge.changes-requested {
-  background: rgba(248, 81, 73, 0.15);
+.pr-badge.merged {
+  background: rgba(163, 113, 247, 0.12);
+  color: #a371f7;
+  border: 1px solid rgba(163, 113, 247, 0.3);
+}
+
+.pr-badge.draft {
+  background: rgba(139, 149, 158, 0.1);
+  color: #8b949e;
+  border: 1px solid rgba(139, 149, 158, 0.25);
+}
+
+.pr-badge.closed {
+  background: rgba(248, 81, 73, 0.12);
   color: #f85149;
   border: 1px solid rgba(248, 81, 73, 0.3);
 }
 
+/* Review status badges */
+.review-badge {
+  font-size: 9px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.review-badge.approved {
+  background: rgba(63, 185, 80, 0.1);
+  color: #3fb950;
+  border: 1px solid rgba(63, 185, 80, 0.2);
+}
+
+.review-badge.changes-requested {
+  background: rgba(248, 81, 73, 0.1);
+  color: #f85149;
+  border: 1px solid rgba(248, 81, 73, 0.2);
+}
+
 .review-badge.review-required {
-  background: rgba(210, 153, 34, 0.15);
+  background: rgba(210, 153, 34, 0.1);
   color: #d29922;
-  border: 1px solid rgba(210, 153, 34, 0.3);
+  border: 1px solid rgba(210, 153, 34, 0.2);
 }
 
 .sub {
-  margin-top: 6px;
+  margin-top: 4px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 /* Empty state: span full width */
@@ -285,16 +301,19 @@ body {
   display: block;
   color: var(--muted);
   text-align: center;
-  padding: 20px 10px;
+  padding: 24px var(--pad);
+  font-size: 12px;
+  opacity: 0.7;
 }
 
 /* Error banner */
 .error-banner {
-  padding: 8px var(--pad);
-  background: var(--vscode-inputValidation-errorBackground, rgba(255, 0, 0, 0.15));
-  border-bottom: 1px solid var(--vscode-inputValidation-errorBorder, #f44);
-  color: var(--vscode-errorForeground, #f88);
-  font-size: 12px;
+  padding: 6px var(--pad);
+  background: rgba(248, 81, 73, 0.08);
+  border-bottom: 1px solid rgba(248, 81, 73, 0.2);
+  color: #f85149;
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 /* Loading overlay */
@@ -304,7 +323,8 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -312,12 +332,12 @@ body {
 }
 
 .spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--vscode-foreground);
-  border-top-color: transparent;
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-top-color: var(--vscode-focusBorder);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.7s linear infinite;
 }
 
 @keyframes spin {
@@ -328,7 +348,7 @@ body {
 
 .footer {
   padding: var(--pad);
-  border-top: 1px solid var(--vscode-sideBar-border);
+  border-top: 1px solid var(--card-border);
 }
 
 .editing {
