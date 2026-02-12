@@ -1,13 +1,17 @@
 :root {
-  --pad: 10px;
-  --radius: 10px;
-  --muted: rgba(255, 255, 255, 0.65);
+  --pad: 12px;
+  --radius: 8px;
+  --muted: rgba(255, 255, 255, 0.55);
+  --card-bg: rgba(255, 255, 255, 0.04);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --rail-color: rgba(255, 255, 255, 0.12);
 }
 
 body {
   padding: 0;
   margin: 0;
   font-family: var(--vscode-font-family);
+  font-size: 13px;
   color: var(--vscode-foreground);
   background: var(--vscode-sideBar-background);
 }
@@ -16,52 +20,67 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--pad);
-  border-bottom: 1px solid var(--vscode-sideBar-border);
+  padding: 10px var(--pad);
+  border-bottom: 1px solid var(--card-border);
 }
 
 .title {
   font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
 }
 
 .actions {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   align-items: center;
 }
 
 .btn {
-  background: var(--vscode-button-background);
-  color: var(--vscode-button-foreground);
-  border: none;
-  border-radius: 8px;
-  padding: 6px 10px;
+  background: var(--card-bg);
+  color: var(--vscode-foreground);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  padding: 4px 10px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: all 0.15s ease;
 }
 
 .btn:hover {
-  background: var(--vscode-button-hoverBackground);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.btn:active {
+  transform: scale(0.97);
 }
 
 .btn-icon {
-  font-size: 16px;
-  padding: 4px 8px;
+  font-size: 14px;
+  padding: 3px 7px;
+  line-height: 1;
 }
 
 .meta {
-  padding: var(--pad);
-  display: grid;
-  gap: 6px;
-  border-bottom: 1px solid var(--vscode-sideBar-border);
+  padding: 8px var(--pad);
+  display: flex;
+  gap: 16px;
+  border-bottom: 1px solid var(--card-border);
   color: var(--muted);
+  font-size: 11px;
 }
 
 .label {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  opacity: 0.75;
-  margin-right: 6px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  opacity: 0.5;
+  margin-right: 5px;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 /* Stack list: vertical tree layout, no gap between nodes */
