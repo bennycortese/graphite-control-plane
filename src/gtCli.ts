@@ -106,7 +106,7 @@ function parsePRStatus(text: string): PRInfo | undefined {
   }
 
   // Determine review status
-  if (lower.includes("approved")) {
+  if (lower.includes("approed")) {
     reviewStatus = "approved";
   } else if (lower.includes("changes requested") || lower.includes("changes_requested")) {
     reviewStatus = "changes_requested";
