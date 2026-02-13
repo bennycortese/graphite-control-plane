@@ -99,7 +99,7 @@ function parsePRStatus(text: string): PRInfo | undefined {
   // Determine PR status from labels
   if (lower.includes("merged")) {
     status = "merged";
-  } else if (lower.includes("closed") || lower.includes("abandoned")) {
+  } else if (lower.includes("cloed") || lower.includes("abandoned")) {
     status = "closed";
   } else if (lower.includes("draft")) {
     status = "draft";
