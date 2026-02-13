@@ -50,20 +50,19 @@
   }
 
   function renderState(state) {
-    // Hide loading
     setLoading(false);
 
     // Error banner
     if (state.error) {
-      if (errorBanner) errorBanner.style.display = "block";
+      if (errorBanner) errorBanner.style.display = "flex";
       if (errorText) errorText.textContent = state.error;
     } else {
       if (errorBanner) errorBanner.style.display = "none";
     }
 
     // Meta
-    if (trunkName) trunkName.textContent = state.trunk || "—";
-    if (currentName) currentName.textContent = state.currentBranch || "—";
+    if (trunkName) trunkName.textContent = state.trunk || "\u2014";
+    if (currentName) currentName.textContent = state.currentBranch || "\u2014";
 
     // Branch list
     if (!stackList) return;
@@ -71,7 +70,7 @@
 
     if (!state.branches || state.branches.length === 0) {
       const li = document.createElement("li");
-      li.className = "node empty-state";
+      li.className = "empty-state";
       li.textContent = state.error
         ? "Unable to load branches"
         : "No branches found";
@@ -79,54 +78,78 @@
       return;
     }
 
+    // Build the commit group container (ISL-style)
+    const group = document.createElement("div");
+    group.className = "commit-group";
+
     for (const branch of state.branches) {
-      const li = document.createElement("li");
-      li.className = "node";
-      if (branch.isCurrent) li.classList.add("current");
-      if (branch.isTrunk) li.classList.add("trunk");
+      const row = document.createElement("div");
+      row.className = "node";
+      if (branch.isCurrent) row.classList.add("current");
+      if (branch.isTrunk) row.classList.add("trunk");
 
-      // Rail column (dot + connecting line via CSS)
-      const rail = document.createElement("div");
-      rail.className = "rail";
-      li.appendChild(rail);
+      // Commit avatar dot (positioned absolute in the branch line)
+      const avatar = document.createElement("div");
+      avatar.className = "commit-avatar";
+      row.appendChild(avatar);
 
-      // Content column
+      // Content area
       const content = document.createElement("div");
       content.className = "node-content";
 
-      // Header row: name + badges
-      const header = document.createElement("div");
-      header.className = "nodeHeader";
+      // First row: commit title + date
+      const firstRow = document.createElement("div");
+      firstRow.className = "commit-row";
 
-      const title = document.createElement("span");
-      title.className = "nodeTitle";
-      title.textContent = branch.name;
-      header.appendChild(title);
+      // Branch name as monospace tag
+      const branchTag = document.createElement("span");
+      branchTag.className = "branch-tag";
+      branchTag.textContent = branch.name;
+      firstRow.appendChild(branchTag);
 
-      const badges = document.createElement("span");
-      badges.className = "badges";
-
+      // "You are here" indicator for current branch
       if (branch.isCurrent) {
-        const badge = document.createElement("span");
-        badge.className = "badge current-badge";
-        badge.textContent = "CURRENT";
-        badges.appendChild(badge);
+        const youAreHere = document.createElement("span");
+        youAreHere.className = "you-are-here";
+        youAreHere.textContent = "You are here";
+        firstRow.appendChild(youAreHere);
       }
 
-      if (branch.isTrunk) {
-        const badge = document.createElement("span");
-        badge.className = "badge trunk-badge";
-        badge.textContent = "TRUNK";
-        badges.appendChild(badge);
+      // Time ago
+      if (branch.timeAgo) {
+        const date = document.createElement("span");
+        date.className = "commit-date";
+        date.textContent = branch.timeAgo;
+        firstRow.appendChild(date);
       }
 
-      // PR badge
+      content.appendChild(firstRow);
+
+      // Second row: commit message + PR badge + review badge
+      const secondRow = document.createElement("div");
+      secondRow.className = "commit-second-row";
+
+      if (branch.commitMessage) {
+        const title = document.createElement("span");
+        title.className = "commit-title";
+        title.textContent = branch.commitMessage;
+        secondRow.appendChild(title);
+      }
+
+      // Short hash
+      if (branch.commitSha) {
+        const hash = document.createElement("span");
+        hash.className = "commit-hash";
+        hash.textContent = branch.commitSha.substring(0, 7);
+        secondRow.appendChild(hash);
+      }
+
+      // PR badge (GitHub-style solid colors)
       if (branch.pr) {
         const prBadge = document.createElement("span");
         prBadge.className = "pr-badge " + branch.pr.status;
-        const statusLabel = branch.pr.status.charAt(0).toUpperCase() + branch.pr.status.slice(1);
-        prBadge.textContent = "#" + branch.pr.number + " " + statusLabel;
-        badges.appendChild(prBadge);
+        prBadge.textContent = "#" + branch.pr.number;
+        secondRow.appendChild(prBadge);
       }
 
       // Review status badge
@@ -139,39 +162,41 @@
           changes_requested: "Changes Requested",
           review_required: "Review Required",
         };
-        reviewBadge.textContent = reviewLabels[branch.pr.reviewStatus] || branch.pr.reviewStatus;
-        badges.appendChild(reviewBadge);
+        reviewBadge.textContent =
+          reviewLabels[branch.pr.reviewStatus] || branch.pr.reviewStatus;
+        secondRow.appendChild(reviewBadge);
       }
 
-      header.appendChild(badges);
-      content.appendChild(header);
+      content.appendChild(secondRow);
+      row.appendChild(content);
 
-      // Sub info: commit + time
-      if (branch.commitMessage || branch.timeAgo) {
-        const sub = document.createElement("div");
-        sub.className = "sub";
+      // Show-on-hover action buttons (ISL-style progressive disclosure)
+      if (!branch.isTrunk) {
+        const actions = document.createElement("div");
+        actions.className = "node-actions";
 
-        const parts = [];
-        if (branch.commitSha) {
-          parts.push(branch.commitSha.substring(0, 7));
-        }
-        if (branch.commitMessage) {
-          parts.push(branch.commitMessage);
-        }
-        if (branch.timeAgo) {
-          parts.push(branch.timeAgo);
+        if (!branch.isCurrent) {
+          const gotoBtn = document.createElement("button");
+          gotoBtn.className = "node-action-btn";
+          gotoBtn.textContent = "Goto";
+          gotoBtn.title = "Checkout this branch";
+          gotoBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            vscode.postMessage({
+              type: "checkout",
+              payload: { branch: branch.name },
+            });
+          });
+          actions.appendChild(gotoBtn);
         }
 
-        sub.textContent = parts.join(" \u2022 ");
-        content.appendChild(sub);
+        row.appendChild(actions);
       }
 
-      li.appendChild(content);
-
-      // Click to checkout non-current branches
+      // Click anywhere on non-current, non-trunk rows to checkout
       if (!branch.isCurrent && !branch.isTrunk) {
-        content.style.cursor = "pointer";
-        content.addEventListener("click", () => {
+        row.style.cursor = "pointer";
+        row.addEventListener("click", () => {
           vscode.postMessage({
             type: "checkout",
             payload: { branch: branch.name },
@@ -179,8 +204,10 @@
         });
       }
 
-      stackList.appendChild(li);
+      group.appendChild(row);
     }
+
+    stackList.appendChild(group);
   }
 
   // Signal ready

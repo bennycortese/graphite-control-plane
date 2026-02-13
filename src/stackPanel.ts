@@ -167,26 +167,30 @@ export class StackPanel {
     <title>Graphite Control Plane</title>
   </head>
   <body>
-    <header class="header">
-      <div class="title">Graphite</div>
-      <div class="actions">
-        <button id="syncBtn" class="btn">Sync</button>
-        <button id="submitBtn" class="btn">Submit</button>
+    <div class="top-bar">
+      <span class="button-group">
+        <span class="top-bar-title">Graphite</span>
+        <button id="syncBtn" class="btn btn-primary">Pull &amp; Sync</button>
+        <button id="submitBtn" class="btn">Submit Stack</button>
         <button id="restackBtn" class="btn">Restack</button>
-        <button id="refreshBtn" class="btn btn-icon" title="Refresh">&#x21bb;</button>
-      </div>
-    </header>
+      </span>
+      <span class="button-group-right">
+        <button id="refreshBtn" class="btn-icon" title="Refresh">&#x21bb;</button>
+      </span>
+    </div>
 
     <div id="errorBanner" class="error-banner" style="display:none;">
       <span id="errorText"></span>
     </div>
 
+    <div class="divider"></div>
+
     <section class="meta">
-      <div><span class="label">TRUNK</span> <span id="trunkName">\u2014</span></div>
-      <div><span class="label">CURRENT</span> <span id="currentName">\u2014</span></div>
+      <div><span class="meta-label">trunk</span> <span id="trunkName">\u2014</span></div>
+      <div><span class="meta-label">head</span> <span id="currentName">\u2014</span></div>
     </section>
 
-    <main>
+    <main class="main-content-area">
       <ul id="stackList" class="stack"></ul>
     </main>
 
