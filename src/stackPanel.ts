@@ -5,6 +5,9 @@ import {
   gtSubmitStack,
   gtRestack,
   gtCheckout,
+  gtMoveBranch,
+  getCommitsForBranch,
+  rebaseCommits,
   StackState,
 } from "./gtCli";
 
@@ -59,6 +62,48 @@ export class StackPanel {
 
           case "restack":
             await this.runAction("Restack", () => gtRestack());
+            return;
+
+          case "getCommits":
+            // Read-only, no busy gate
+            try {
+              const commits = await getCommitsForBranch(
+                msg.payload?.branch,
+                msg.payload?.parent
+              );
+              this.panel.webview.postMessage({
+                type: "commits",
+                payload: { branch: msg.payload?.branch, commits },
+              });
+            } catch {
+              this.panel.webview.postMessage({
+                type: "commits",
+                payload: { branch: msg.payload?.branch, commits: [] },
+              });
+            }
+            return;
+
+          case "reorderBranches":
+            await this.runAction("Reorder Branches", async () => {
+              const order = msg.payload?.order as string[];
+              if (!order) {
+                throw new Error("No order provided");
+              }
+              for (let i = 1; i < order.length; i++) {
+                await gtMoveBranch(order[i], order[i - 1]);
+              }
+              return gtRestack();
+            });
+            return;
+
+          case "reorderCommits":
+            await this.runAction("Reorder Commits", async () => {
+              return rebaseCommits(
+                msg.payload?.branch,
+                msg.payload?.parent,
+                msg.payload?.commitActions
+              );
+            });
             return;
         }
       },

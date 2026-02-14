@@ -1,5 +1,8 @@
 import * as vscode from "vscode";
 import { execFile } from "child_process";
+import * as os from "os";
+import * as fs from "fs";
+import * as path from "path";
 
 export type PRInfo = {
   number: number;
@@ -25,6 +28,16 @@ export type StackState = {
   error?: string;
 };
 
+export type CommitInfo = {
+  sha: string;
+  message: string;
+};
+
+export type CommitAction = {
+  sha: string;
+  action: "pick" | "fixup" | "drop";
+};
+
 function getWorkspaceDir(): string | undefined {
   return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 }
@@ -46,6 +59,37 @@ function runGt(args: string[]): Promise<string> {
       }
       resolve(stdout);
     });
+  });
+}
+
+function runGit(
+  args: string[],
+  envOverrides?: Record<string, string>
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const cwd = getWorkspaceDir();
+    if (!cwd) {
+      reject(new Error("No workspace folder open"));
+      return;
+    }
+
+    execFile(
+      "git",
+      args,
+      {
+        cwd,
+        timeout: 60000,
+        shell: true,
+        env: envOverrides ? { ...process.env, ...envOverrides } : undefined,
+      },
+      (err, stdout, stderr) => {
+        if (err) {
+          reject(new Error(stderr || err.message));
+          return;
+        }
+        resolve(stdout);
+      }
+    );
   });
 }
 
@@ -306,4 +350,85 @@ export async function gtCreate(name: string): Promise<string> {
 
 export async function gtDelete(name: string): Promise<string> {
   return runGt(["branch", "delete", name, "--force"]);
+}
+
+export async function getCommitsForBranch(
+  branch: string,
+  parent: string
+): Promise<CommitInfo[]> {
+  const range = parent ? `${parent}..${branch}` : branch;
+  const output = await runGit(["log", "--oneline", "--reverse", range]);
+  const lines = output.trim().split("\n").filter(Boolean);
+  return lines.map((line) => {
+    const spaceIdx = line.indexOf(" ");
+    const sha = spaceIdx > 0 ? line.substring(0, spaceIdx) : line;
+    const message = spaceIdx > 0 ? line.substring(spaceIdx + 1) : "";
+    return { sha, message };
+  });
+}
+
+export async function gtMoveBranch(
+  branch: string,
+  newParent: string
+): Promise<string> {
+  await runGt(["checkout", branch]);
+  return runGt(["upstack", "onto", newParent]);
+}
+
+export async function rebaseCommits(
+  branch: string,
+  parent: string,
+  commitActions: CommitAction[]
+): Promise<string> {
+  // Validate: cannot drop all commits
+  const nonDrop = commitActions.filter((c) => c.action !== "drop");
+  if (nonDrop.length === 0) {
+    throw new Error("Cannot drop all commits in a branch");
+  }
+
+  // Auto-convert first fixup to pick (rebase requires first action to be pick)
+  const actions = commitActions.map((a) => ({ ...a }));
+  if (actions.length > 0 && actions[0].action === "fixup") {
+    actions[0].action = "pick";
+  }
+
+  // Checkout the branch first
+  await gtCheckout(branch);
+
+  // Write a temp Node.js script that acts as GIT_SEQUENCE_EDITOR
+  const tmpDir = os.tmpdir();
+  const scriptPath = path.join(tmpDir, `gt-rebase-editor-${Date.now()}.js`);
+
+  const actionsJson = JSON.stringify(actions);
+  const script = `const fs = require("fs");
+const todoFile = process.argv[2];
+const actions = ${actionsJson};
+const lines = [];
+for (const a of actions) {
+  if (a.action === "drop") continue;
+  lines.push(a.action + " " + a.sha);
+}
+fs.writeFileSync(todoFile, lines.join("\\n") + "\\n");
+`;
+
+  fs.writeFileSync(scriptPath, script, "utf8");
+
+  try {
+    // Handle Windows path backslashes
+    const editorPath = scriptPath.replace(/\\/g, "/");
+    const editorCmd = `node "${editorPath}"`;
+
+    await runGit(["rebase", "-i", parent], {
+      GIT_SEQUENCE_EDITOR: editorCmd,
+    });
+  } finally {
+    try {
+      fs.unlinkSync(scriptPath);
+    } catch {
+      // Ignore cleanup errors
+    }
+  }
+
+  // Restack after rebase
+  return runGt(["restack"]);
 }
