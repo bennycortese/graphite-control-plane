@@ -24,7 +24,8 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(python3:*)",
       "Bash(gh api:*)",
-      "WebFetch(domain:mobbin.com)"
+      "WebFetch(domain:mobbin.com)",
+      "Bash(npm run compile:*)"
     ]
   }
 }

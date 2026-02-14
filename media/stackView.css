@@ -826,6 +826,69 @@ body {
   animation: spin 0.7s linear infinite;
 }
 
+/* ── Local Commits section ── */
+.local-commits-section {
+  margin: 8px 14px 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+}
+
+.local-commits-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.local-commits-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.local-commits-count {
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+  padding: 1px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.local-commits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+
+.local-commit-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.local-commit-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.local-commits-add-btn {
+  width: 100%;
+  justify-content: center;
+  height: 30px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
 /* ── Scrollbar styling ── */
 ::-webkit-scrollbar {
   width: 10px;

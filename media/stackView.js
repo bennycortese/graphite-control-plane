@@ -70,6 +70,72 @@
     }
   }
 
+  function renderLocalCommits(commits) {
+    // Remove existing section to prevent duplicates
+    const existing = document.getElementById("localCommitsSection");
+    if (existing) existing.remove();
+
+    if (!commits || commits.length === 0) return;
+
+    const section = document.createElement("div");
+    section.id = "localCommitsSection";
+    section.className = "local-commits-section";
+
+    // Header
+    const header = document.createElement("div");
+    header.className = "local-commits-header";
+
+    const title = document.createElement("span");
+    title.className = "local-commits-title";
+    title.textContent = "Local Commits";
+    header.appendChild(title);
+
+    const countBadge = document.createElement("span");
+    countBadge.className = "local-commits-count";
+    countBadge.textContent = String(commits.length);
+    header.appendChild(countBadge);
+
+    section.appendChild(header);
+
+    // Commit list
+    const list = document.createElement("div");
+    list.className = "local-commits-list";
+
+    for (const commit of commits) {
+      const row = document.createElement("div");
+      row.className = "local-commit-row";
+
+      const sha = document.createElement("span");
+      sha.className = "commit-sha";
+      sha.textContent = commit.sha.substring(0, 7);
+      row.appendChild(sha);
+
+      const msg = document.createElement("span");
+      msg.className = "commit-message";
+      msg.textContent = commit.message;
+      row.appendChild(msg);
+
+      list.appendChild(row);
+    }
+
+    section.appendChild(list);
+
+    // Add to Stack button
+    const addBtn = document.createElement("button");
+    addBtn.className = "btn btn-primary local-commits-add-btn";
+    addBtn.textContent = "Add to Stack";
+    addBtn.addEventListener("click", () => {
+      vscode.postMessage({ type: "createBranch" });
+    });
+    section.appendChild(addBtn);
+
+    // Insert before the stack list
+    const mainContent = document.querySelector(".main-content-area");
+    if (mainContent) {
+      mainContent.insertBefore(section, mainContent.firstChild);
+    }
+  }
+
   function renderState(state) {
     setLoading(false);
     currentState = state;
@@ -85,6 +151,9 @@
     // Meta
     if (trunkName) trunkName.textContent = state.trunk || "\u2014";
     if (currentName) currentName.textContent = state.currentBranch || "\u2014";
+
+    // Local commits section (above branch list)
+    renderLocalCommits(state.localCommits || []);
 
     // Branch list
     if (!stackList) return;

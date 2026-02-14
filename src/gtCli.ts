@@ -25,6 +25,7 @@ export type StackState = {
   trunk: string;
   currentBranch: string;
   branches: BranchInfo[];
+  localCommits: CommitInfo[];
   error?: string;
 };
 
@@ -115,13 +116,26 @@ export async function getStackState(): Promise<StackState> {
 
     const currentBranch = branches.find((b) => b.isCurrent)?.name ?? trunk;
 
-    return { trunk, currentBranch, branches };
+    // Fetch local commits for the current branch (skip if on trunk)
+    let localCommits: CommitInfo[] = [];
+    if (currentBranch !== trunk) {
+      const currentBranchInfo = branches.find((b) => b.isCurrent);
+      const parent = currentBranchInfo?.parentName || trunk;
+      try {
+        localCommits = await getCommitsForBranch(currentBranch, parent);
+      } catch {
+        // Ignore errors fetching commits
+      }
+    }
+
+    return { trunk, currentBranch, branches, localCommits };
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
     return {
       trunk: "main",
       currentBranch: "",
       branches: [],
+      localCommits: [],
       error: msg,
     };
   }

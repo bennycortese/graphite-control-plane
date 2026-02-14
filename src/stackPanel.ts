@@ -5,6 +5,7 @@ import {
   gtSubmitStack,
   gtRestack,
   gtCheckout,
+  gtCreate,
   gtMoveBranch,
   getCommitsForBranch,
   rebaseCommits,
@@ -82,6 +83,26 @@ export class StackPanel {
               });
             }
             return;
+
+          case "createBranch": {
+            const name = await vscode.window.showInputBox({
+              prompt: "Enter a name for the new stacked branch",
+              placeHolder: "my-feature",
+              validateInput: (value) => {
+                if (!value || !value.trim()) {
+                  return "Branch name is required";
+                }
+                if (/\s/.test(value)) {
+                  return "Branch name cannot contain spaces";
+                }
+                return undefined;
+              },
+            });
+            if (name) {
+              await this.runAction("Create Branch", () => gtCreate(name));
+            }
+            return;
+          }
 
           case "reorderBranches":
             await this.runAction("Reorder Branches", async () => {
