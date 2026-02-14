@@ -23,7 +23,8 @@
       "WebFetch(domain:www.alanvardy.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(python3:*)",
-      "Bash(gh api:*)"
+      "Bash(gh api:*)",
+      "WebFetch(domain:mobbin.com)"
     ]
   }
 }
