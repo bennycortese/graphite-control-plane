@@ -1,29 +1,62 @@
+/* ================================================================
+   Graphite Control Plane — Design System v2
+   Inspired by Linear (hierarchy), Reducto (warmth), Hearthstone (depth)
+   ================================================================ */
+
 :root {
-  --pad: 10px;
-  --halfpad: 5px;
-  --foreground: var(--vscode-foreground, #cccccc);
-  --background: var(--vscode-sideBar-background, #1e1e1e);
-  --focus-border: var(--vscode-focusBorder, #007fd4);
-  --divider: var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
-  --hover-bg: rgba(255, 255, 255, 0.1);
-  --subtle-hover-bg: rgba(255, 255, 255, 0.03);
-  --selected-bg: rgba(255, 255, 255, 0.1);
-  --muted: rgba(255, 255, 255, 0.55);
+  --pad: 12px;
+  --halfpad: 6px;
+  --radius: 8px;
+  --radius-sm: 5px;
+  --radius-lg: 12px;
+
+  /* Core palette */
+  --foreground: var(--vscode-foreground, #e1e3e8);
+  --background: var(--vscode-sideBar-background, #111117);
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-raised: rgba(255, 255, 255, 0.055);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --focus-border: var(--vscode-focusBorder, #7c5cfc);
+  --divider: rgba(255, 255, 255, 0.07);
+  --muted: rgba(255, 255, 255, 0.45);
+  --muted-strong: rgba(255, 255, 255, 0.6);
+
+  /* Accent system - purple/violet (Linear-inspired) */
+  --accent: #7c5cfc;
+  --accent-soft: rgba(124, 92, 252, 0.12);
+  --accent-glow: rgba(124, 92, 252, 0.25);
+  --accent-text: #a78bfa;
+
+  /* Warm accent for highlights (Hearthstone gold) */
+  --warm: #f0b352;
+  --warm-soft: rgba(240, 179, 82, 0.1);
 
   /* GitHub PR colors */
-  --gh-open-bg: #238636;
-  --gh-closed-bg: #da3633;
-  --gh-merged-bg: #8957e5;
-  --gh-draft-bg: #6e7781;
-  --gh-badge-fg: white;
+  --gh-open-bg: rgba(35, 134, 54, 0.85);
+  --gh-closed-bg: rgba(218, 54, 51, 0.85);
+  --gh-merged-bg: rgba(137, 87, 229, 0.85);
+  --gh-draft-bg: rgba(110, 119, 129, 0.7);
+  --gh-badge-fg: #fff;
 
   /* Signal colors */
-  --signal-good: #2da44e;
-  --signal-warn: #e0d12d;
-  --signal-bad: #cf222e;
+  --signal-good: #34d058;
+  --signal-good-soft: rgba(52, 208, 88, 0.12);
+  --signal-warn: #e8c838;
+  --signal-warn-soft: rgba(232, 200, 56, 0.12);
+  --signal-bad: #f85149;
+  --signal-bad-soft: rgba(248, 81, 73, 0.12);
 
-  /* Card/border colors */
-  --card-border: rgba(255, 255, 255, 0.08);
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 20px rgba(124, 92, 252, 0.15);
+
+  /* Transitions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+  --duration-fast: 0.15s;
+  --duration-normal: 0.25s;
+  --duration-slow: 0.4s;
 }
 
 * {
@@ -33,11 +66,27 @@
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter",
+    Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   font-size: var(--vscode-font-size, 13px);
   color: var(--foreground);
   background: var(--background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Accent stripe at top ── */
+.accent-stripe {
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), #a78bfa, var(--warm), var(--accent));
+  background-size: 200% 100%;
+  animation: shimmer 8s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 /* ── Top bar ── */
@@ -47,92 +96,120 @@ body {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  padding: 10px 14px;
-  gap: var(--pad);
+  padding: 12px 16px;
+  gap: 10px;
   position: sticky;
   top: 0;
   z-index: 11;
-  background-color: var(--background);
+  background: var(--background);
   border-bottom: 1px solid var(--divider);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .button-group {
   display: flex;
-  gap: var(--halfpad);
+  gap: 6px;
   align-items: center;
 }
 
 .button-group-right {
   display: flex;
-  gap: var(--halfpad);
+  gap: 6px;
   align-items: center;
   margin-left: auto;
 }
 
 .top-bar-title {
-  font-weight: 600;
-  font-size: 12px;
-  opacity: 0.6;
-  letter-spacing: 0.03em;
-  margin-right: var(--halfpad);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+  margin-right: 8px;
+  opacity: 0.9;
 }
 
 /* ── Buttons ── */
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  background: var(--vscode-button-secondaryBackground, #3a3d41);
-  color: var(--vscode-button-secondaryForeground, #fff);
-  border: 1px solid var(--card-border);
-  border-radius: 6px;
-  padding: 4px 14px;
+  justify-content: center;
+  gap: 6px;
+  background: var(--surface-raised);
+  color: var(--foreground);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius);
+  padding: 5px 14px;
   cursor: pointer;
   font-size: 12px;
+  font-weight: 500;
   font-family: inherit;
-  height: 28px;
+  height: 30px;
   white-space: nowrap;
-  transition: background-color 0.15s, border-color 0.15s;
+  transition: all var(--duration-normal) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.04), transparent);
+  opacity: 0;
+  transition: opacity var(--duration-fast);
 }
 
 .btn:hover {
-  background: var(--vscode-button-secondaryHoverBackground, #45494e);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--surface-hover);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-0.5px);
+}
+
+.btn:hover::before {
+  opacity: 1;
 }
 
 .btn:active {
-  transform: scale(0.98);
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
 }
 
 .btn-primary {
-  background: var(--vscode-button-background, #0e639c);
-  color: var(--vscode-button-foreground, #fff);
-  border-color: transparent;
+  background: linear-gradient(135deg, var(--accent), #6346e0);
+  color: #fff;
+  border-color: rgba(124, 92, 252, 0.3);
+  font-weight: 600;
 }
 
 .btn-primary:hover {
-  background: var(--vscode-button-hoverBackground, #1177bb);
+  background: linear-gradient(135deg, #8b6fff, #7050f0);
+  box-shadow: var(--shadow-sm), 0 0 16px rgba(124, 92, 252, 0.2);
+  border-color: rgba(124, 92, 252, 0.5);
 }
 
 .btn-icon {
-  background: var(--vscode-button-secondaryBackground, #3a3d41);
-  border: 1px solid var(--card-border);
-  height: 28px;
-  width: 28px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  height: 30px;
+  width: 30px;
   padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 15px;
-  border-radius: 6px;
-  color: var(--foreground);
+  border-radius: var(--radius);
+  color: var(--muted-strong);
   cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s;
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 .btn-icon:hover {
-  background: var(--vscode-button-secondaryHoverBackground, #45494e);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--surface-hover);
+  color: var(--foreground);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ── Divider ── */
@@ -144,19 +221,19 @@ body {
 /* ── Meta info ── */
 .meta {
   display: flex;
-  gap: 16px;
-  padding: 8px 14px;
+  gap: 20px;
+  padding: 10px 18px;
   font-size: 11px;
   color: var(--muted);
 }
 
 .meta-label {
-  font-size: 10px;
-  letter-spacing: 0.04em;
-  opacity: 0.45;
-  font-weight: 500;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  opacity: 0.5;
+  font-weight: 600;
   text-transform: uppercase;
-  margin-right: 4px;
+  margin-right: 5px;
 }
 
 /* ── Stack list ── */
@@ -171,8 +248,8 @@ body {
 
 /* ── Commit group ── */
 .commit-group {
-  margin-left: 24px;
-  margin-top: 12px;
+  margin-left: 28px;
+  margin-top: 10px;
   margin-bottom: 20px;
   position: relative;
   display: flex;
@@ -183,40 +260,55 @@ body {
 /* Vertical branch line */
 .commit-group::before {
   content: "";
-  border-left: 2px solid var(--foreground);
   position: absolute;
-  bottom: 5px;
+  bottom: 8px;
   top: 18px;
   left: -10px;
   z-index: 1;
-  opacity: 0.25;
+  width: 2px;
+  border-radius: 1px;
+  background: linear-gradient(
+    180deg,
+    var(--accent) 0%,
+    rgba(124, 92, 252, 0.3) 50%,
+    rgba(124, 92, 252, 0.08) 100%
+  );
 }
 
-/* ── Individual commit row ── */
+/* ── Individual branch node ── */
 .node {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: var(--halfpad);
-  padding: 5px var(--pad) 5px 4px;
+  padding: 7px var(--pad) 7px 6px;
   position: relative;
   cursor: pointer;
-  border-radius: 6px;
-  transition: background-color 0.15s;
-  margin-right: 4px;
+  border-radius: var(--radius);
+  transition: all var(--duration-normal) var(--ease-out);
+  margin-right: 6px;
+  margin-bottom: 1px;
 }
 
 .node:hover {
-  background-color: var(--hover-bg);
+  background-color: var(--surface-hover);
 }
 
 .node.current {
-  background-color: rgba(255, 255, 255, 0.06);
+  background: linear-gradient(135deg, var(--accent-soft), rgba(124, 92, 252, 0.04));
+  border: 1px solid rgba(124, 92, 252, 0.15);
+  margin-left: -1px;
+  margin-right: 5px;
+}
+
+.node.current:hover {
+  background: linear-gradient(135deg, rgba(124, 92, 252, 0.16), rgba(124, 92, 252, 0.06));
+  border-color: rgba(124, 92, 252, 0.25);
 }
 
 .node.trunk {
   cursor: default;
-  opacity: 0.65;
+  opacity: 0.55;
 }
 
 .node.trunk:hover {
@@ -228,29 +320,31 @@ body {
   position: absolute;
   left: -16px;
   z-index: 3;
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   border: 2px solid var(--background);
   background-color: var(--muted);
   box-sizing: border-box;
   flex-shrink: 0;
-  transition: transform 0.2s, box-shadow 0.3s;
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 .node.current .commit-avatar {
   border-color: var(--background);
-  background-color: var(--vscode-button-hoverBackground, #1177bb);
-  box-shadow: 0 0 0 2px var(--vscode-button-hoverBackground, #1177bb);
-  transform: scale(1.05);
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft), 0 0 12px var(--accent-glow);
+  width: 14px;
+  height: 14px;
+  left: -17px;
 }
 
 .node.trunk .commit-avatar {
   border-radius: 3px;
-  background-color: rgba(255, 255, 255, 0.25);
-  width: 12px;
-  height: 12px;
-  left: -15px;
+  background-color: rgba(255, 255, 255, 0.2);
+  width: 10px;
+  height: 10px;
+  left: -14px;
 }
 
 /* ── "You are here" indicator ── */
@@ -260,11 +354,12 @@ body {
   gap: 4px;
   font-size: 10px;
   font-weight: 600;
-  color: #fff;
-  background: var(--signal-good);
-  padding: 2px 8px;
-  border-radius: 10px;
-  margin-left: 6px;
+  color: var(--accent-text);
+  background: var(--accent-soft);
+  border: 1px solid rgba(124, 92, 252, 0.2);
+  padding: 1px 8px;
+  border-radius: 20px;
+  margin-left: 8px;
   white-space: nowrap;
   letter-spacing: 0.02em;
 }
@@ -273,10 +368,10 @@ body {
 .node-content {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   flex: 1;
   min-width: 0;
-  padding: 4px 6px;
+  padding: 3px 6px;
 }
 
 /* ── Commit info row ── */
@@ -296,22 +391,24 @@ body {
   white-space: nowrap;
   min-width: 0;
   flex-shrink: 1;
+  letter-spacing: -0.005em;
 }
 
 .node.current .commit-title {
   font-weight: 500;
+  color: #fff;
 }
 
 .commit-date {
-  font-size: 90%;
-  opacity: 0.5;
+  font-size: 11px;
+  color: var(--muted);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .commit-hash {
-  font-size: 11px;
-  opacity: 0.4;
+  font-size: 10px;
+  color: var(--muted);
   font-family: var(--vscode-editor-font-family, "Consolas", "Courier New", monospace);
   white-space: nowrap;
   flex-shrink: 0;
@@ -325,34 +422,35 @@ body {
   flex-wrap: wrap;
 }
 
-/* ── PR badges (GitHub-style solid colors) ── */
+/* ── PR badges ── */
 .pr-badge {
   display: inline-flex;
   align-items: center;
   gap: 3px;
   font-size: 10px;
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 10px;
+  padding: 2px 9px;
+  border-radius: 20px;
   white-space: nowrap;
   color: var(--gh-badge-fg);
   letter-spacing: 0.01em;
+  box-shadow: var(--shadow-sm);
 }
 
 .pr-badge.open {
-  background-color: var(--gh-open-bg);
+  background: var(--gh-open-bg);
 }
 
 .pr-badge.merged {
-  background-color: var(--gh-merged-bg);
+  background: var(--gh-merged-bg);
 }
 
 .pr-badge.draft {
-  background-color: var(--gh-draft-bg);
+  background: var(--gh-draft-bg);
 }
 
 .pr-badge.closed {
-  background-color: var(--gh-closed-bg);
+  background: var(--gh-closed-bg);
 }
 
 /* ── Review status badges ── */
@@ -361,30 +459,31 @@ body {
   align-items: center;
   font-size: 10px;
   font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
   white-space: nowrap;
   color: var(--gh-badge-fg);
+  box-shadow: var(--shadow-sm);
 }
 
 .review-badge.approved {
-  background-color: var(--signal-good);
+  background: var(--signal-good);
 }
 
 .review-badge.changes-requested {
-  background-color: var(--signal-bad);
+  background: var(--signal-bad);
 }
 
 .review-badge.review-required {
-  background-color: var(--signal-warn);
-  color: #1e1e1e;
+  background: rgba(232, 200, 56, 0.85);
+  color: #1a1a1a;
 }
 
 /* ── Badges container ── */
 .badges {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   flex-shrink: 0;
   margin-left: auto;
 }
@@ -395,19 +494,19 @@ body {
   font-size: 10px;
   font-weight: 600;
   padding: 1px 6px;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   white-space: nowrap;
 }
 
 .trunk-badge {
   background: rgba(255, 255, 255, 0.04);
   color: var(--muted);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   font-size: 9px;
   text-transform: uppercase;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 5px;
-  padding: 1px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
 }
 
 /* ── Sub info line ── */
@@ -418,14 +517,13 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   padding-top: 1px;
-  opacity: 0.6;
 }
 
-/* ── Node header left side (drag handle + chevron + title) ── */
+/* ── Node header left side ── */
 .nodeHeader-left {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   min-width: 0;
   flex: 1;
 }
@@ -436,17 +534,18 @@ body {
   opacity: 0;
   font-size: 11px;
   color: var(--muted);
-  transition: opacity 0.15s ease;
+  transition: opacity var(--duration-fast) ease;
   flex-shrink: 0;
   user-select: none;
 }
 
 .node:hover .branch-drag-handle {
-  opacity: 0.6;
+  opacity: 0.45;
 }
 
 .branch-drag-handle:hover {
   opacity: 1 !important;
+  color: var(--accent-text);
 }
 
 /* ── Expand/collapse toggle ── */
@@ -454,7 +553,7 @@ body {
   cursor: pointer;
   font-size: 9px;
   color: var(--muted);
-  transition: color 0.15s ease, transform 0.15s ease;
+  transition: color var(--duration-fast) ease, transform var(--duration-normal) var(--ease-out);
   flex-shrink: 0;
   user-select: none;
   width: 14px;
@@ -462,12 +561,13 @@ body {
 }
 
 .expand-toggle:hover {
-  color: var(--vscode-foreground);
+  color: var(--accent-text);
 }
 
 /* ── Branch dragging state ── */
 .node.dragging {
-  opacity: 0.4;
+  opacity: 0.35;
+  transform: scale(0.98);
 }
 
 .node.dragging .node-content {
@@ -476,59 +576,65 @@ body {
 
 /* ── Branch drop indicators ── */
 .node.drop-above {
-  border-top: 2px solid var(--vscode-focusBorder);
-  border-radius: 6px 6px 0 0;
+  border-top: 2px solid var(--accent);
+  border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: 0 -4px 12px var(--accent-glow);
 }
 
 .node.drop-below {
-  border-bottom: 2px solid var(--vscode-focusBorder);
-  border-radius: 0 0 6px 6px;
+  border-bottom: 2px solid var(--accent);
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: 0 4px 12px var(--accent-glow);
 }
 
 /* ── Commits container ── */
 .commits-container {
   margin-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--divider);
   padding-top: 8px;
+  overflow: hidden;
 }
 
 .commits-loading,
 .commits-empty {
   color: var(--muted);
   font-size: 11px;
-  padding: 4px 0;
+  padding: 6px 0;
   font-style: italic;
 }
 
 .commits-error {
-  color: #f85149;
+  color: var(--signal-bad);
   font-size: 11px;
-  padding: 4px 0;
+  padding: 4px 8px;
   margin-top: 4px;
+  background: var(--signal-bad-soft);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(248, 81, 73, 0.15);
 }
 
 /* ── Commit list ── */
 .commit-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
-/* ── Commit row ── */
+/* ── Commit row (inside expanded branch) ── */
 .commit-list .commit-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 6px;
-  border-radius: 5px;
+  gap: 7px;
+  padding: 5px 7px;
+  border-radius: var(--radius-sm);
   font-size: 11px;
-  transition: background 0.15s ease;
+  transition: background var(--duration-fast) ease;
   cursor: default;
   flex-wrap: nowrap;
 }
 
 .commit-list .commit-row:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface-hover);
 }
 
 /* ── Commit drag handle ── */
@@ -539,28 +645,30 @@ body {
   color: var(--muted);
   flex-shrink: 0;
   user-select: none;
-  transition: opacity 0.12s ease;
+  transition: opacity var(--duration-fast) ease;
 }
 
 .commit-list .commit-row:hover .commit-drag-handle {
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .commit-drag-handle:hover {
   opacity: 1 !important;
+  color: var(--accent-text);
 }
 
 /* ── Commit SHA badge ── */
 .commit-sha {
   font-family: var(--vscode-editor-font-family, monospace);
   font-size: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--card-border);
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 4px;
-  padding: 1px 5px;
-  color: var(--muted);
+  padding: 1px 6px;
+  color: var(--muted-strong);
   flex-shrink: 0;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
+  transition: all var(--duration-fast) ease;
 }
 
 /* ── Commit message ── */
@@ -570,16 +678,16 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--vscode-foreground);
+  color: var(--foreground);
 }
 
 /* ── Commit action buttons (squash/drop) ── */
 .commit-action-btns {
   display: flex;
-  gap: 2px;
+  gap: 3px;
   flex-shrink: 0;
   opacity: 0;
-  transition: opacity 0.12s ease;
+  transition: opacity var(--duration-fast) ease;
 }
 
 .commit-list .commit-row:hover .commit-action-btns {
@@ -594,7 +702,7 @@ body {
 
 .commit-action-btn {
   background: transparent;
-  border: 1px solid var(--card-border);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 4px;
   color: var(--muted);
   font-size: 10px;
@@ -604,44 +712,46 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) ease;
   padding: 0;
   font-weight: 600;
 }
 
 .commit-action-btn:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  color: var(--vscode-foreground);
-  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--foreground);
+  background: var(--surface-hover);
 }
 
 /* Squash button active */
 .squash-btn.active {
-  background: rgba(210, 153, 34, 0.15);
-  border-color: rgba(210, 153, 34, 0.4);
-  color: #d29922;
+  background: var(--warm-soft);
+  border-color: rgba(240, 179, 82, 0.35);
+  color: var(--warm);
+  box-shadow: 0 0 8px rgba(240, 179, 82, 0.1);
 }
 
 /* Drop button active */
 .drop-btn.active {
-  background: rgba(248, 81, 73, 0.15);
-  border-color: rgba(248, 81, 73, 0.4);
-  color: #f85149;
+  background: var(--signal-bad-soft);
+  border-color: rgba(248, 81, 73, 0.35);
+  color: var(--signal-bad);
+  box-shadow: 0 0 8px rgba(248, 81, 73, 0.1);
 }
 
 /* ── Commit row visual states ── */
 .commit-list .commit-row.action-fixup {
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .commit-list .commit-row.action-fixup .commit-sha {
-  background: rgba(210, 153, 34, 0.1);
-  border-color: rgba(210, 153, 34, 0.3);
-  color: #d29922;
+  background: var(--warm-soft);
+  border-color: rgba(240, 179, 82, 0.25);
+  color: var(--warm);
 }
 
 .commit-list .commit-row.action-drop {
-  opacity: 0.45;
+  opacity: 0.35;
 }
 
 .commit-list .commit-row.action-drop .commit-message {
@@ -650,44 +760,49 @@ body {
 }
 
 .commit-list .commit-row.action-drop .commit-sha {
-  background: rgba(248, 81, 73, 0.1);
-  border-color: rgba(248, 81, 73, 0.3);
-  color: #f85149;
+  background: var(--signal-bad-soft);
+  border-color: rgba(248, 81, 73, 0.25);
+  color: var(--signal-bad);
 }
 
 /* ── Commit dragging state ── */
 .commit-list .commit-row.dragging {
-  opacity: 0.3;
+  opacity: 0.25;
+  transform: scale(0.97);
 }
 
 /* ── Commit drop indicators ── */
 .commit-list .commit-row.commit-drop-above {
-  border-top: 2px solid var(--vscode-focusBorder);
+  border-top: 2px solid var(--accent);
+  box-shadow: 0 -2px 8px var(--accent-glow);
 }
 
 .commit-list .commit-row.commit-drop-below {
-  border-bottom: 2px solid var(--vscode-focusBorder);
+  border-bottom: 2px solid var(--accent);
+  box-shadow: 0 2px 8px var(--accent-glow);
 }
 
 /* ── Apply/Reset action bar ── */
 .commit-actions-bar {
   display: flex;
   gap: 6px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--divider);
 }
 
 .commit-apply-btn {
-  background: rgba(63, 185, 80, 0.1);
-  border-color: rgba(63, 185, 80, 0.3);
-  color: #3fb950;
+  background: var(--signal-good-soft) !important;
+  border-color: rgba(52, 208, 88, 0.2) !important;
+  color: var(--signal-good) !important;
   font-size: 11px;
+  font-weight: 600;
 }
 
 .commit-apply-btn:hover {
-  background: rgba(63, 185, 80, 0.2) !important;
-  border-color: rgba(63, 185, 80, 0.5) !important;
+  background: rgba(52, 208, 88, 0.2) !important;
+  border-color: rgba(52, 208, 88, 0.4) !important;
+  box-shadow: 0 0 12px rgba(52, 208, 88, 0.1) !important;
 }
 
 .commit-reset-btn {
@@ -699,7 +814,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 12px;
+  font-size: 12.5px;
   padding: 0;
   border-radius: 0;
   background: transparent;
@@ -709,15 +824,21 @@ body {
   text-overflow: ellipsis;
   max-width: 220px;
   font-weight: 400;
+  letter-spacing: -0.01em;
 }
 
-/* ── Hover action buttons (show on hover, ISL-style) ── */
+.node.current .branch-tag {
+  color: #fff;
+  font-weight: 500;
+}
+
+/* ── Hover action buttons ── */
 .node-actions {
   display: flex;
-  gap: 2px;
+  gap: 3px;
   align-items: center;
   opacity: 0;
-  transition: opacity 0.1s;
+  transition: opacity var(--duration-fast);
   flex-shrink: 0;
   margin-left: auto;
 }
@@ -728,33 +849,36 @@ body {
 
 .node-action-btn {
   background: transparent;
-  border: 1px solid var(--card-border);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   color: var(--foreground);
   cursor: pointer;
   font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 5px;
-  opacity: 0.7;
+  padding: 2px 10px;
+  border-radius: var(--radius-sm);
+  opacity: 0.6;
   font-family: inherit;
   white-space: nowrap;
-  transition: background-color 0.15s, opacity 0.15s, border-color 0.15s;
+  transition: all var(--duration-fast) ease;
 }
 
 .node-action-btn:hover {
-  background: rgba(90, 93, 94, 0.31);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--surface-hover);
+  border-color: rgba(255, 255, 255, 0.14);
   opacity: 1;
 }
 
 /* ── Empty state ── */
 .empty-state {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 48px var(--pad);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  opacity: 0.4;
+  padding: 60px var(--pad);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.01em;
 }
 
 /* ── Error banner ── */
@@ -763,12 +887,13 @@ body {
   align-items: center;
   gap: var(--halfpad);
   font-size: 12px;
-  margin: 8px 14px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  color: rgb(235, 236, 237);
-  background-color: rgba(248, 126, 124, 0.18);
-  border: 1px solid rgba(248, 126, 124, 0.25);
+  margin: 10px 16px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  color: #f0b8b8;
+  background: var(--signal-bad-soft);
+  border: 1px solid rgba(248, 81, 73, 0.18);
+  box-shadow: 0 0 20px rgba(248, 81, 73, 0.06);
 }
 
 /* ── Loading overlay ── */
@@ -778,20 +903,32 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 14px;
   z-index: 100;
 }
 
 .spinner {
-  width: 22px;
-  height: 22px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-top-color: var(--focus-border);
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-top-color: var(--accent);
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  animation: spin 0.8s var(--ease-in-out) infinite;
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+.loading-text {
+  font-size: 11px;
+  color: var(--muted-strong);
+  letter-spacing: 0.03em;
+  font-weight: 500;
 }
 
 @keyframes spin {
@@ -815,48 +952,55 @@ body {
   display: flex;
   align-items: center;
   gap: var(--halfpad);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .progress-spinner {
   width: 12px;
   height: 12px;
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-top-color: var(--focus-border);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-top-color: var(--accent);
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  animation: spin 0.8s var(--ease-in-out) infinite;
 }
 
 /* ── Local Commits section ── */
 .local-commits-section {
-  margin: 8px 14px 12px;
-  padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
+  margin: 10px 16px 14px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--duration-normal) var(--ease-out);
+}
+
+.local-commits-section:hover {
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .local-commits-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .local-commits-title {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--muted);
+  letter-spacing: 0.06em;
+  color: var(--muted-strong);
 }
 
 .local-commits-count {
   font-size: 10px;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--muted);
-  padding: 1px 6px;
-  border-radius: 10px;
+  font-weight: 700;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  padding: 1px 7px;
+  border-radius: 20px;
   min-width: 18px;
   text-align: center;
 }
@@ -864,34 +1008,62 @@ body {
 .local-commits-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   margin-bottom: 10px;
 }
 
 .local-commit-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 3px 4px;
-  border-radius: 4px;
+  gap: 7px;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
   font-size: 11px;
+  transition: background var(--duration-fast) ease;
 }
 
 .local-commit-row:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface-hover);
 }
 
 .local-commits-add-btn {
   width: 100%;
   justify-content: center;
-  height: 30px;
+  height: 32px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
 }
+
+/* ── Branch entry animation ── */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.node {
+  animation: fadeSlideIn var(--duration-slow) var(--ease-out) both;
+}
+
+.node:nth-child(1) { animation-delay: 0ms; }
+.node:nth-child(2) { animation-delay: 40ms; }
+.node:nth-child(3) { animation-delay: 80ms; }
+.node:nth-child(4) { animation-delay: 120ms; }
+.node:nth-child(5) { animation-delay: 160ms; }
+.node:nth-child(6) { animation-delay: 200ms; }
+.node:nth-child(7) { animation-delay: 240ms; }
+.node:nth-child(8) { animation-delay: 280ms; }
+.node:nth-child(9) { animation-delay: 320ms; }
+.node:nth-child(10) { animation-delay: 360ms; }
 
 /* ── Scrollbar styling ── */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -899,10 +1071,23 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(121, 121, 121, 0.4);
-  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 100, 100, 0.7);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ── Selection ── */
+::selection {
+  background: var(--accent-soft);
+  color: #fff;
+}
+
+/* ── Focus visible ── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }

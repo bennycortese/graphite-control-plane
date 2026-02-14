@@ -64,9 +64,14 @@
     }
   });
 
-  function setLoading(show) {
+  const loadingText = document.querySelector(".loading-text");
+
+  function setLoading(show, message) {
     if (loadingOverlay) {
       loadingOverlay.style.display = show ? "flex" : "none";
+    }
+    if (loadingText) {
+      loadingText.textContent = message || "Loading...";
     }
   }
 
@@ -392,11 +397,51 @@
     return li;
   }
 
+  function smoothCollapse(el) {
+    el.style.height = el.scrollHeight + "px";
+    el.style.overflow = "hidden";
+    el.style.transition = "height 0.25s cubic-bezier(0.16,1,0.3,1), opacity 0.2s ease";
+    el.style.opacity = "1";
+    requestAnimationFrame(() => {
+      el.style.height = "0px";
+      el.style.opacity = "0";
+    });
+    const onEnd = () => {
+      el.style.display = "none";
+      el.style.height = "";
+      el.style.overflow = "";
+      el.style.transition = "";
+      el.style.opacity = "";
+      el.removeEventListener("transitionend", onEnd);
+    };
+    el.addEventListener("transitionend", onEnd, { once: true });
+  }
+
+  function smoothExpand(el) {
+    el.style.display = "block";
+    el.style.height = "0px";
+    el.style.overflow = "hidden";
+    el.style.opacity = "0";
+    el.style.transition = "height 0.3s cubic-bezier(0.16,1,0.3,1), opacity 0.25s ease";
+    requestAnimationFrame(() => {
+      el.style.height = el.scrollHeight + "px";
+      el.style.opacity = "1";
+    });
+    const onEnd = () => {
+      el.style.height = "";
+      el.style.overflow = "";
+      el.style.transition = "";
+      el.style.opacity = "";
+      el.removeEventListener("transitionend", onEnd);
+    };
+    el.addEventListener("transitionend", onEnd, { once: true });
+  }
+
   function toggleExpand(branch) {
     if (expandedBranches.has(branch.name)) {
       expandedBranches.delete(branch.name);
       const container = document.getElementById("commits-" + branch.name);
-      if (container) container.style.display = "none";
+      if (container) smoothCollapse(container);
       // Update chevron
       const node = stackList?.querySelector(
         `[data-branch="${branch.name}"]`
@@ -405,11 +450,21 @@
       if (chevron) {
         chevron.textContent = "\u25B6";
         chevron.title = "Expand commits";
+        chevron.style.transform = "rotate(0deg)";
       }
     } else {
       expandedBranches.add(branch.name);
       const container = document.getElementById("commits-" + branch.name);
-      if (container) container.style.display = "block";
+      // Request commits if not cached
+      if (!commitsCache.has(branch.name)) {
+        if (container) {
+          container.style.display = "block";
+        }
+        requestCommits(branch);
+      } else {
+        renderCommitsForBranch(branch.name);
+        if (container) smoothExpand(container);
+      }
       // Update chevron
       const node = stackList?.querySelector(
         `[data-branch="${branch.name}"]`
@@ -418,12 +473,7 @@
       if (chevron) {
         chevron.textContent = "\u25BC";
         chevron.title = "Collapse commits";
-      }
-      // Request commits if not cached
-      if (!commitsCache.has(branch.name)) {
-        requestCommits(branch);
-      } else {
-        renderCommitsForBranch(branch.name);
+        chevron.style.transform = "rotate(0deg)";
       }
     }
   }

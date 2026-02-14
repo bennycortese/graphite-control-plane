@@ -25,7 +25,10 @@
       "Bash(python3:*)",
       "Bash(gh api:*)",
       "WebFetch(domain:mobbin.com)",
-      "Bash(npm run compile:*)"
+      "Bash(npm run compile:*)",
+      "WebFetch(domain:reducto.ai)",
+      "WebFetch(domain:linear.app)",
+      "WebFetch(domain:hearthstone.blizzard.com)"
     ]
   }
 }

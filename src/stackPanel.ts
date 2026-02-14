@@ -233,6 +233,7 @@ export class StackPanel {
     <title>Graphite Control Plane</title>
   </head>
   <body>
+    <div class="accent-stripe"></div>
     <div class="top-bar">
       <span class="button-group">
         <span class="top-bar-title">Graphite</span>
@@ -262,6 +263,7 @@ export class StackPanel {
 
     <div id="loadingOverlay" class="loading-overlay" style="display:none;">
       <div class="spinner"></div>
+      <span class="loading-text">Loading...</span>
     </div>
 
     <script nonce="${nonce}" src="${scriptUri}"></script>
