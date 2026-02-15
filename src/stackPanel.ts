@@ -226,46 +226,14 @@ export class StackPanel {
     <meta http-equiv="Content-Security-Policy"
       content="default-src 'none';
                img-src ${webview.cspSource} https:;
-               style-src ${webview.cspSource};
+               style-src ${webview.cspSource} 'unsafe-inline';
                script-src 'nonce-${nonce}';" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="${styleUri}" rel="stylesheet" />
     <title>Graphite Control Plane</title>
   </head>
   <body>
-    <div class="accent-stripe"></div>
-    <div class="top-bar">
-      <span class="button-group">
-        <span class="top-bar-title">Graphite</span>
-        <button id="syncBtn" class="btn btn-primary">Pull &amp; Sync</button>
-        <button id="submitBtn" class="btn">Submit Stack</button>
-        <button id="restackBtn" class="btn">Restack</button>
-      </span>
-      <span class="button-group-right">
-        <button id="refreshBtn" class="btn-icon" title="Refresh">&#x21bb;</button>
-      </span>
-    </div>
-
-    <div id="errorBanner" class="error-banner" style="display:none;">
-      <span id="errorText"></span>
-    </div>
-
-    <div class="divider"></div>
-
-    <section class="meta">
-      <div><span class="meta-label">trunk</span> <span id="trunkName">\u2014</span></div>
-      <div><span class="meta-label">head</span> <span id="currentName">\u2014</span></div>
-    </section>
-
-    <main class="main-content-area">
-      <ul id="stackList" class="stack"></ul>
-    </main>
-
-    <div id="loadingOverlay" class="loading-overlay" style="display:none;">
-      <div class="spinner"></div>
-      <span class="loading-text">Loading...</span>
-    </div>
-
+    <div id="root"></div>
     <script nonce="${nonce}" src="${scriptUri}"></script>
   </body>
 </html>`;

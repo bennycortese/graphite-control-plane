@@ -1,0 +1,300 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.vscode-dark *));
+
+/*
+ * Graphite Control Plane — Design System
+ * CSS custom properties + Tailwind v4 utilities
+ */
+
+:root {
+  --pad: 12px;
+  --halfpad: 6px;
+  --radius: 8px;
+  --radius-sm: 5px;
+  --radius-lg: 12px;
+
+  /* Core palette */
+  --foreground: var(--vscode-foreground, #e1e3e8);
+  --background: var(--vscode-sideBar-background, #111117);
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-raised: rgba(255, 255, 255, 0.055);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --focus-border: var(--vscode-focusBorder, #7c5cfc);
+  --divider: rgba(255, 255, 255, 0.07);
+  --muted: rgba(255, 255, 255, 0.45);
+  --muted-strong: rgba(255, 255, 255, 0.6);
+
+  /* Accent system */
+  --accent: #7c5cfc;
+  --accent-soft: rgba(124, 92, 252, 0.12);
+  --accent-glow: rgba(124, 92, 252, 0.25);
+  --accent-text: #a78bfa;
+
+  /* Warm accent */
+  --warm: #f0b352;
+  --warm-soft: rgba(240, 179, 82, 0.1);
+
+  /* GitHub PR colors */
+  --gh-open-bg: rgba(35, 134, 54, 0.85);
+  --gh-closed-bg: rgba(218, 54, 51, 0.85);
+  --gh-merged-bg: rgba(137, 87, 229, 0.85);
+  --gh-draft-bg: rgba(110, 119, 129, 0.7);
+  --gh-badge-fg: #fff;
+
+  /* Signal colors */
+  --signal-good: #34d058;
+  --signal-good-soft: rgba(52, 208, 88, 0.12);
+  --signal-warn: #e8c838;
+  --signal-warn-soft: rgba(232, 200, 56, 0.12);
+  --signal-bad: #f85149;
+  --signal-bad-soft: rgba(248, 81, 73, 0.12);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 20px rgba(124, 92, 252, 0.15);
+
+  /* Transitions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+  --duration-fast: 0.15s;
+  --duration-normal: 0.25s;
+  --duration-slow: 0.4s;
+}
+
+/* Keyframes */
+@keyframes shimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse-text {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Body reset */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-size: var(--vscode-font-size, 13px);
+  color: var(--foreground);
+  background: var(--background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Selection */
+::selection {
+  background: var(--accent-soft);
+  color: #fff;
+}
+
+/* Focus visible */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Buttons ── */
+.gcp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--surface-raised);
+  color: var(--foreground);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius);
+  padding: 5px 14px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  height: 30px;
+  white-space: nowrap;
+  transition: all var(--duration-normal) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.gcp-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent);
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+
+.gcp-btn:hover {
+  background: var(--surface-hover);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-0.5px);
+}
+
+.gcp-btn:hover::before {
+  opacity: 1;
+}
+
+.gcp-btn:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
+}
+
+.gcp-btn-primary {
+  background: linear-gradient(135deg, var(--accent), #6346e0);
+  color: #fff;
+  border-color: rgba(124, 92, 252, 0.3);
+  font-weight: 600;
+}
+
+.gcp-btn-primary:hover {
+  background: linear-gradient(135deg, #8b6fff, #7050f0);
+  box-shadow: var(--shadow-sm), 0 0 16px rgba(124, 92, 252, 0.2);
+  border-color: rgba(124, 92, 252, 0.5);
+}
+
+.gcp-btn-icon {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  height: 30px;
+  width: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  border-radius: var(--radius);
+  color: var(--muted-strong);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.gcp-btn-icon:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Branch node hover reveals ── */
+.gcp-node:hover .branch-drag-handle {
+  opacity: 0.45;
+}
+
+.branch-drag-handle:hover {
+  opacity: 1 !important;
+  color: var(--accent-text) !important;
+}
+
+.commit-drag-handle:hover {
+  opacity: 1 !important;
+  color: var(--accent-text) !important;
+}
+
+/* Show commit drag handles and action btns on row hover */
+.commit-row-item:hover .commit-drag-handle {
+  opacity: 0.4;
+}
+
+.commit-row-item:hover .commit-action-btns {
+  opacity: 1;
+}
+
+/* ── Branch DnD drop indicators ── */
+.gcp-node.dragging {
+  opacity: 0.35;
+  transform: scale(0.98);
+}
+
+.gcp-node.drop-above {
+  border-top: 2px solid var(--accent);
+  border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: 0 -4px 12px var(--accent-glow);
+}
+
+.gcp-node.drop-below {
+  border-bottom: 2px solid var(--accent);
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+/* ── Commit DnD drop indicators ── */
+.commit-row-item.dragging {
+  opacity: 0.25;
+  transform: scale(0.97);
+}
+
+.commit-row-item.commit-drop-above {
+  border-top: 2px solid var(--accent);
+  box-shadow: 0 -2px 8px var(--accent-glow);
+}
+
+.commit-row-item.commit-drop-below {
+  border-bottom: 2px solid var(--accent);
+  box-shadow: 0 2px 8px var(--accent-glow);
+}

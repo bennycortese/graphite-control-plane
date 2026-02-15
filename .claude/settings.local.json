@@ -28,7 +28,9 @@
       "Bash(npm run compile:*)",
       "WebFetch(domain:reducto.ai)",
       "WebFetch(domain:linear.app)",
-      "WebFetch(domain:hearthstone.blizzard.com)"
+      "WebFetch(domain:hearthstone.blizzard.com)",
+      "Bash(npm install:*)",
+      "Bash(npx vite build)"
     ]
   }
 }

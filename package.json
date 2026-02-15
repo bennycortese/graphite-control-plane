@@ -48,10 +48,14 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
-    "compile": "webpack",
+    "compile": "npm run compile:ext && npm run compile:webview",
+    "compile:ext": "webpack",
+    "compile:webview": "cd webview-ui && npx vite build",
     "watch": "webpack --watch",
-    "package": "webpack --mode production",
-    "lint": "eslint src --ext ts"
+    "watch:webview": "cd webview-ui && npx vite build --watch",
+    "package": "webpack --mode production && cd webview-ui && npx vite build",
+    "lint": "eslint src --ext ts",
+    "postinstall": "cd webview-ui && npm install"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
