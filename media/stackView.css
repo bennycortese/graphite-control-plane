@@ -318,10 +318,12 @@ body {
 /* ── Commit avatar/dot ── */
 .commit-avatar {
   position: absolute;
-  left: -16px;
+  left: -15px;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 3;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   border: 2px solid var(--background);
   background-color: var(--muted);
@@ -333,18 +335,18 @@ body {
 .node.current .commit-avatar {
   border-color: var(--background);
   background: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft), 0 0 12px var(--accent-glow);
-  width: 14px;
-  height: 14px;
-  left: -17px;
+  box-shadow: 0 0 0 3px var(--accent-soft), 0 0 10px var(--accent-glow);
+  width: 12px;
+  height: 12px;
+  left: -16px;
 }
 
 .node.trunk .commit-avatar {
-  border-radius: 3px;
-  background-color: rgba(255, 255, 255, 0.2);
-  width: 10px;
-  height: 10px;
-  left: -14px;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.18);
+  width: 8px;
+  height: 8px;
+  left: -13px;
 }
 
 /* ── "You are here" indicator ── */
@@ -903,38 +905,50 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 12px;
   z-index: 100;
+  animation: overlay-fade-in 0.2s ease-out;
+}
+
+@keyframes overlay-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .spinner {
-  width: 24px;
-  height: 24px;
-  border: 2px solid rgba(255, 255, 255, 0.08);
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
   border-top-color: var(--accent);
+  border-right-color: rgba(124, 92, 252, 0.3);
   border-radius: 50%;
-  animation: spin 0.8s var(--ease-in-out) infinite;
-  box-shadow: 0 0 16px var(--accent-glow);
+  animation: spin 0.7s linear infinite;
 }
 
 .loading-text {
   font-size: 11px;
   color: var(--muted-strong);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   font-weight: 500;
+  animation: pulse-text 1.8s ease-in-out infinite;
 }
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
+}
+
+@keyframes pulse-text {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 /* ── Progress bar at bottom ── */
@@ -959,10 +973,11 @@ body {
 .progress-spinner {
   width: 12px;
   height: 12px;
-  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border: 1.5px solid transparent;
   border-top-color: var(--accent);
+  border-right-color: rgba(124, 92, 252, 0.3);
   border-radius: 50%;
-  animation: spin 0.8s var(--ease-in-out) infinite;
+  animation: spin 0.7s linear infinite;
 }
 
 /* ── Local Commits section ── */
